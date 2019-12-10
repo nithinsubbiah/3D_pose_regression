@@ -27,8 +27,7 @@ def read_3d_data(dataset):
             positions_3d = []
             for cam in anim['cameras']:
                 pos_3d = world_to_camera(anim['positions'], R=cam['orientation'], t=cam['translation'])
-                import pdb;pdb.set_trace()
-                pos_3d[:, :] -= pos_3d[:, :1]  # Remove global offset
+#                pos_3d[:, :] -= pos_3d[:, :1]  # Remove global offset
                 positions_3d.append(pos_3d)
             anim['positions_3d'] = positions_3d
 
