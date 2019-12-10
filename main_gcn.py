@@ -19,6 +19,7 @@ from common.graph_utils import adj_mx_from_skeleton
 from common.data_utils import fetch, read_3d_data, create_2d_data
 from common.generators import PoseGenerator
 from common.loss import mpjpe, p_mpjpe
+from common.camera import project_to_2d, project_to_2d_linear
 from models.sem_gcn import SemGCN
 
 
