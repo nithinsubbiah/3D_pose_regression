@@ -270,9 +270,9 @@ def evaluate(data_loader, model_pos, device):
         output_2d = project_to_2d_linear(outputs_3d, intrinsics)
         # true_output_2d = project_to_2d(targets_3d, intrinsics)
         true_output_2d = project_to_2d_linear(targets_3d, intrinsics)
-        import pdb;pdb.set_trace()
 
         outputs_3d[:, :, :] -= outputs_3d[:, :1, :]  # Zero-centre the root (hip)
+        targets_3d[:, :, :] -= targets_3d[:, :1, :]  # Zero-centre the root (hip)
 
         epoch_loss_3d_pos.update(mpjpe(outputs_3d, targets_3d).item() * 1000.0, num_poses)
         epoch_loss_3d_pos_procrustes.update(p_mpjpe(outputs_3d.numpy(), targets_3d.numpy()).item() * 1000.0, num_poses)

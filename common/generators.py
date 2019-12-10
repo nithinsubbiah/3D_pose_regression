@@ -15,11 +15,6 @@ class PoseGenerator(Dataset):
         self._poses_3d = np.concatenate(poses_3d)
         self._poses_2d = np.concatenate(poses_2d)
         self._actions = reduce(lambda x, y: x + y, actions)
-        
-        # p = torch.from_numpy(poses_3d[0][0]).unsqueeze(0)
-        # i = torch.from_numpy(intrinsics[0]).unsqueeze(0)
-        # true_output_2d = project_to_2d(p, i)
-        # import pdb;pdb.set_trace()
 
         self._intrinsics = []
         for i in range(len(poses_3d)):
@@ -41,6 +36,30 @@ class PoseGenerator(Dataset):
         out_intrinsics = torch.from_numpy(out_intrinsics).float()
 
         return out_pose_3d, out_pose_2d, out_action, out_intrinsics
+
+    def __len__(self):
+        return len(self._actions)
+
+class PoseGenerator_viz(Dataset):
+    def __init__(self, poses_3d, poses_2d, actions):
+        assert poses_3d is not None
+
+        self._poses_3d = np.concatenate(poses_3d)
+        self._poses_2d = np.concatenate(poses_2d)
+        self._actions = reduce(lambda x, y: x + y, actions)
+
+        assert self._poses_3d.shape[0] == self._poses_2d.shape[0] and self._poses_3d.shape[0] == len(self._actions)
+        print('Generating {} poses...'.format(len(self._actions)))
+
+    def __getitem__(self, index):
+        out_pose_3d = self._poses_3d[index]
+        out_pose_2d = self._poses_2d[index]
+        out_action = self._actions[index]
+
+        out_pose_3d = torch.from_numpy(out_pose_3d).float()
+        out_pose_2d = torch.from_numpy(out_pose_2d).float()
+
+        return out_pose_3d, out_pose_2d, out_action
 
     def __len__(self):
         return len(self._actions)
