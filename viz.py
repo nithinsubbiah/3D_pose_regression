@@ -73,7 +73,7 @@ def main(args):
     keypoints = create_2d_data(path.join('data', 'data_2d_' + args.dataset + '_' + args.keypoints + '.npz'), dataset)
 
     cudnn.benchmark = True
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device("cuda")
 
     # Create model
     print("==> Creating model...")
@@ -100,7 +100,7 @@ def main(args):
 
     if path.isfile(ckpt_path):
         print("==> Loading checkpoint '{}'".format(ckpt_path))
-        ckpt = torch.load(ckpt_path, map_location='cpu')
+        ckpt = torch.load(ckpt_path)
         start_epoch = ckpt['epoch']
         error_best = ckpt['error']
         model_pos.load_state_dict(ckpt['state_dict'])

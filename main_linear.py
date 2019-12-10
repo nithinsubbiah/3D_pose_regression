@@ -20,6 +20,7 @@ from common.generators import PoseGenerator
 from common.loss import mpjpe, p_mpjpe
 from models.linear_model import LinearModel, init_weights
 
+
 def parse_args():
     parser = argparse.ArgumentParser(description='PyTorch training script')
 
@@ -86,7 +87,7 @@ def main(args):
 
     stride = args.downsample
     cudnn.benchmark = True
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device("cuda")
 
     # Create model
     print("==> Creating model...")
@@ -104,8 +105,7 @@ def main(args):
 
         if path.isfile(ckpt_path):
             print("==> Loading checkpoint '{}'".format(ckpt_path))
-            # Changing to CPU
-            ckpt = torch.load(ckpt_path, map_location='cpu')
+            ckpt = torch.load(ckpt_path)
             start_epoch = ckpt['epoch']
             error_best = ckpt['error']
             glob_step = ckpt['step']

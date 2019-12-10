@@ -19,7 +19,6 @@ from common.graph_utils import adj_mx_from_skeleton
 from common.data_utils import fetch, read_3d_data, create_2d_data
 from common.generators import PoseGenerator
 from common.loss import mpjpe, p_mpjpe
-from common.camera import project_to_2d, project_to_2d_linear
 from models.sem_gcn import SemGCN
 
 
@@ -94,7 +93,7 @@ def main(args):
 
     stride = args.downsample
     cudnn.benchmark = True
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device("cuda")
 
     # Create model
     print("==> Creating model...")
@@ -114,7 +113,7 @@ def main(args):
 
         if path.isfile(ckpt_path):
             print("==> Loading checkpoint '{}'".format(ckpt_path))
-            ckpt = torch.load(ckpt_path, map_location='cpu')
+            ckpt = torch.load(ckpt_path)
             start_epoch = ckpt['epoch']
             error_best = ckpt['error']
             glob_step = ckpt['step']
@@ -223,8 +222,16 @@ def train(data_loader, model_pos, criterion, optimizer, device, lr_init, lr_now,
         targets_3d, inputs_2d = targets_3d.to(device), inputs_2d.to(device)
         outputs_3d = model_pos(inputs_2d)
 
+        #####
+        # outputs_3d[:, :] += targets_3d[:, :1]
+        outputs_2d = project_to_2d(outputs_3d, intrinsics)
+        
         optimizer.zero_grad()
-        loss_3d_pos = criterion(outputs_3d, targets_3d)
+        loss_3d_pos = criterion(outputs_2d, inputs_2d)
+
+        #####
+        # optimizer.zero_grad()
+        # loss_3d_pos = criterion(outputs_3d, targets_3d)
 
         loss_3d_pos.backward()
         if max_norm:
@@ -266,12 +273,6 @@ def evaluate(data_loader, model_pos, device):
 
         inputs_2d = inputs_2d.to(device)
         outputs_3d = model_pos(inputs_2d).cpu()
-
-        output_2d = project_to_2d_linear(outputs_3d, intrinsics)
-        # true_output_2d = project_to_2d(targets_3d, intrinsics)
-        true_output_2d = project_to_2d_linear(targets_3d, intrinsics)
-        import pdb;pdb.set_trace()
-
         outputs_3d[:, :, :] -= outputs_3d[:, :1, :]  # Zero-centre the root (hip)
 
         epoch_loss_3d_pos.update(mpjpe(outputs_3d, targets_3d).item() * 1000.0, num_poses)

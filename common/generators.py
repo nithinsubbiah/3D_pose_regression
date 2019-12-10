@@ -1,11 +1,8 @@
 from __future__ import print_function, absolute_import
-# from functools import reduce
 
 import numpy as np
 import torch
 from torch.utils.data import Dataset
-
-from common.camera import project_to_2d
 
 
 class PoseGenerator(Dataset):
@@ -16,11 +13,6 @@ class PoseGenerator(Dataset):
         self._poses_2d = np.concatenate(poses_2d)
         self._actions = reduce(lambda x, y: x + y, actions)
         
-        # p = torch.from_numpy(poses_3d[0][0]).unsqueeze(0)
-        # i = torch.from_numpy(intrinsics[0]).unsqueeze(0)
-        # true_output_2d = project_to_2d(p, i)
-        # import pdb;pdb.set_trace()
-
         self._intrinsics = []
         for i in range(len(poses_3d)):
             self._intrinsics.append(np.repeat([intrinsics[i]], poses_3d[i].shape[0], axis=0))

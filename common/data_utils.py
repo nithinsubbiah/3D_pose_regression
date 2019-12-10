@@ -24,10 +24,10 @@ def read_3d_data(dataset):
     for subject in dataset.subjects():
         for action in dataset[subject].keys():
             anim = dataset[subject][action]
+
             positions_3d = []
             for cam in anim['cameras']:
                 pos_3d = world_to_camera(anim['positions'], R=cam['orientation'], t=cam['translation'])
-                import pdb;pdb.set_trace()
                 pos_3d[:, :] -= pos_3d[:, :1]  # Remove global offset
                 positions_3d.append(pos_3d)
             anim['positions_3d'] = positions_3d
@@ -39,7 +39,6 @@ def fetch(subjects, dataset, keypoints, action_filter=None, stride=1, parse_3d_p
     out_poses_3d = []
     out_poses_2d = []
     out_actions = []
-    cameras = []
 
     for subject in subjects:
         for action in keypoints[subject].keys():
@@ -57,7 +56,6 @@ def fetch(subjects, dataset, keypoints, action_filter=None, stride=1, parse_3d_p
             for i in range(len(poses_2d)):  # Iterate across cameras
                 out_poses_2d.append(poses_2d[i])
                 out_actions.append([action.split(' ')[0]] * poses_2d[i].shape[0])
-                cameras.append(dataset[subject][action]['cameras'][i]['intrinsic'])
 
             if parse_3d_poses and 'positions_3d' in dataset[subject][action]:
                 poses_3d = dataset[subject][action]['positions_3d']
@@ -76,4 +74,4 @@ def fetch(subjects, dataset, keypoints, action_filter=None, stride=1, parse_3d_p
             if out_poses_3d is not None:
                 out_poses_3d[i] = out_poses_3d[i][::stride]
 
-    return out_poses_3d, out_poses_2d, out_actions, cameras
+    return out_poses_3d, out_poses_2d, out_actions
