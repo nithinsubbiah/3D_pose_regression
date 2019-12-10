@@ -167,6 +167,7 @@ def evaluate(data_loader, model_pos, device, architecture):
         else:
             outputs_3d = model_pos(inputs_2d).cpu()
             outputs_3d[:, :, :] -= outputs_3d[:, :1, :]  # Zero-centre the root (hip)
+            targets_3d[:, :, :] -= targets_3d[:, :1, :]  # Zero-centre the root (hip)
 
         predictions.append(outputs_3d.numpy())
 
