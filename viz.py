@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader
 from progress.bar import Bar
 from common.utils import AverageMeter
 from common.data_utils import read_3d_data, create_2d_data
-from common.generators import PoseGenerator
+from common.generators import PoseGenerator_viz
 from common.loss import mpjpe, p_mpjpe
 from common.camera import camera_to_world, image_coordinates
 from common.visualization import render_animation
@@ -121,7 +121,7 @@ def main(args):
     ground_truth = dataset[args.viz_subject][args.viz_action]['positions_3d'][args.viz_camera].copy()
 
     input_keypoints = out_poses_2d.copy()
-    render_loader = DataLoader(PoseGenerator([out_poses_3d], [out_poses_2d], [out_actions]), batch_size=args.batch_size,
+    render_loader = DataLoader(PoseGenerator_viz([out_poses_3d], [out_poses_2d], [out_actions]), batch_size=args.batch_size,
                                shuffle=False, num_workers=args.num_workers, pin_memory=True)
 
     prediction = evaluate(render_loader, model_pos, device, args.architecture)[0]
